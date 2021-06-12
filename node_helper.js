@@ -82,13 +82,16 @@ module.exports = NodeHelper.create({
                     volume: data[2],
                     isMuted: data[3],
                 };
+            }).catch (err => {
+                console.log(err);
             });
         })).then(items => {
-            this.sendSocketNotification('SET_SONOS_GROUPS', items.reduce((map, item) => {
+            const validItems = items.filter(i => i != null)
+            this.sendSocketNotification('SET_SONOS_GROUPS', validItems.reduce((map, item) => {
                 map[item.group.ID] = item;
                 return map;
             }, {}));
-            return items;
+            return validItems;
         }).then(groups => {
             this.setListeners(groups.map(item => item.group));
         });
